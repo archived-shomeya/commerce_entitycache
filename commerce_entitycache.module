@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ * Provides integration with Entitycache module for Commerce entities.
+ */
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function commerce_entitycache_entity_info_alter(&$entity_info) {
+  foreach (commerce_entitycache_supported_entities(TRUE) as $type => $controller) {
+    $entity_info[$type]['field cache'] = FALSE;
+    $entity_info[$type]['entity cache'] = TRUE;
+    $entity_info[$type]['controller class'] = $controller;
+  }
+}
+
+/**
+ * Node entity controller with persistent cache.
+ */
+class CommerceEntityCacheProductController extends CommerceProductEntityController {
+  public function resetCache(array $ids = NULL) {
+    EntityCacheControllerHelper::resetEntityCache($this, $ids);
+    parent::resetCache($ids);
+  }
+  public function load($ids = array(), $conditions = array()) {
+    return EntityCacheControllerHelper::entityCacheLoad($this, $ids, $conditions);
+  }
+}
+
+/**
+ * Helper function to list all supported commerce entities.
+ *
+ * @param $enabled
+ *   If set, only return enabled modules.
+ *
+ * @return
+ *   An array of commerce entities.
+ */
+function commerce_entitycache_supported_entities($enabled = FALSE) {
+  $return = array(
+    'commerce_product' => 'CommerceEntityCacheProductController',
+  );
+  // If the $enabled param is past, remove modules from the array if they're
+  // not enabled.
+  if ($enabled) {
+    if (!module_exists('commerce_product')) {
+      unset($return['commerce_product']);
+    }
+  }
+  return $return;
+}

@@ -1,0 +1,4 @@
+name = Commerce Entitycache
+description = Provides integration with Entitycache module for Commerce entities.
+core = 7.x
+dependencies[] = entitycache

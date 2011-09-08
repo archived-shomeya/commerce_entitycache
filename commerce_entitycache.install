@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file Schema and install hooks for the commerce_entitycache module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function commerce_entitycache_schema() {
+  $schema = array();
+  // Load the .module file rather than declare this function twice.
+  drupal_load('module', 'commerce_entitycache');
+  $entities = array_keys(commerce_entitycache_supported_entities());
+  $cache_schema = drupal_get_schema_unprocessed('system', 'cache');
+
+  foreach ($entities as $type) {
+    $schema["cache_entity_$type"] = $cache_schema;
+    $schema["cache_entity_$type"]['description'] = "Cache table used to store $type entity records.";
+  }
+  return $schema;
+}
+
+/**
+ * Implements hook_enable().
+ */
+function commerce_entitycache_enable() {
+  variable_set('commerce_entitycache_enabled', TRUE);
+  registry_update();
+  entity_info_cache_clear();
+}
+
+/**
+ * Implements hook_disable().
+ */
+function commerce_entitycache_disable() {
+  variable_del('commerce_entitycache_enabled');
+}

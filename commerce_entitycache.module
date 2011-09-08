@@ -17,7 +17,7 @@ function commerce_entitycache_entity_info_alter(&$entity_info) {
 }
 
 /**
- * Node entity controller with persistent cache.
+ * Product entity controller with persistent cache.
  */
 class CommerceEntityCacheProductController extends CommerceProductEntityController {
   public function resetCache(array $ids = NULL) {
